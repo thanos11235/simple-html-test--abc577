@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Github User Info</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <form id="github-user-${seed}" class="row g-1">
+            <div class="col-md-6">
+                <label for="github-username" class="form-label">Enter GitHub Username</label>
+                <input type="text" class="form-control" id="github-username" name="github-username" required>
+            </div>
+            <div class="col-md-6">
+                <label for="github-token" class="form-label">GitHub Token</label>
+                <input type="text" class="form-control" id="github-token" name="github-token">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Get Account Creation Date</button>
+            </div>
+        </form>
+        <div class="mt-3">
+            <p>Account Created At: <span id="github-created-at"></span></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('github-user-${seed}').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('github-username').value;
+            const token = document.getElementById('github-token').value;
+            axios.get(`https://api.github.com/users/${username}`, {
+                headers: {
+                    Authorization: token ? `token ${token}` : ''
+                }
+            })
+                .then(response => {
+                    const createdAt = new Date(response.data.created_at);
+                    document.getElementById('github-created-at').textContent = createdAt.toISOString().slice(0, 10);
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById('github-created-at').textContent = 'Error fetching data';
+                });
+        });
+    </script>
+</body>
+
+</html>
